@@ -17,7 +17,6 @@ function promesa(bandera){
     try {
         var listaDeClientes;
         var respuesta = await promesa(true)
-        var respuesta2 = await promesa(false)
         console.log(respuesta);
         console.log(respuesta2);
     } catch (error) {

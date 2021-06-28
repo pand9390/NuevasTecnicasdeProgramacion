@@ -1,6 +1,6 @@
 // traemos el paquete
 const {Router} = require('express');
-// const data = require("./data");
+const data = require('../data.json');
 //Inicializamos Router
 const router = Router()
 
@@ -22,13 +22,72 @@ router
         nombre: params.nombre,
         apellido: params.apellido
 })
+})  //deber
+.get("/users", (req, res)=>{
+    res.json({
+        msg: "LISTA DE USUARIOS",
+        body: data.map((person)=>{
+            person.first_name = person.first_name.toUpperCase()
+            person.last_name = person.last_name.toUpperCase()
+            return person
+        })
+    })
+}).get("/users-query",(req, res)=>{
+    const {query: {id}}= req;
+    function promesa(req){
+        return new Promise((resolve, reject)=>{
+            if (req && req < 11) {
+                resolve("Peticion Resuelta");
+            } else {
+                reject("La operacion Falló");
+            }
+            
+        })
+    }
+    (async()=>{
+        try {
+            var respuesta = await promesa(id)
+            console.log(respuesta);
+                res.json({
+                    msg: "CONSULTA QUERY ID",
+                    body: data.filter( element => element.id == id)
+                
+                })
+            
+        } catch (error) {
+            console.log(error);   
+                res.json({
+                msg: "CONSULTA QUERY ID",
+                error:"Verifique que haya ingresado un query con valor numerico y que este en un rango de 1 a 10",
+                body: data
+            
+            })
+        }
+    })()   
 })
-// .get("/users", (req, res)=>{
-//     res.send({
-//         msg:"lista de usuarios",
-//         body: data
-//     })
-// })
+.get("/users-params/:apellido", (req,res)=>{
+    const {params:{apellido}} = req;
+    
+    var data_filter = data.filter(element=> element.last_name === apellido)
+    if (data_filter[0] != undefined) {
+        const email = data_filter.map(item =>{
+            delete item.id
+            delete item.first_name
+            delete item.last_name
+            return item
+        })
+        res.json({
+            msg: "Consulta params apellido",
+            body:email
+        })
+    }else{
+        res.json({
+            msg:"El apellido:"+apellido+"no existe",
+            body: []
+        })
+    }
+    
+})
 
 
 
